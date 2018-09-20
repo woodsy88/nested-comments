@@ -20,4 +20,8 @@
 </dl>
 
 <h2>Comments</h2>
-<%= render partial: "comments/form", locals: { commentable: @post } %>
+
+<%= render partial: "comments/form", 
+           locals: { commentable: @post } %>
+
+<%= render @post.comments.where(parent_id: nil) %>
