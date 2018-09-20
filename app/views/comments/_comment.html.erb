@@ -1,21 +1,23 @@
-<div class="card pl-4 mt-4">
-  <div class="border-left"><%= simple_format comment.body %></div>
- 
-      posted by <%= comment.user.name %>
-      <%= time_ago_in_words(comment.created_at) %> ago
-      
-    <div data-controller="reply">
-      <%= link_to 'Reply', "#", data: { action: "click->reply#toggle" } %>
-      <%= render partial: "comments/form", 
-                locals: { 
-                      commentable: comment.commentable, 
-                      parent_id: comment.id,
-                      class: "d-none",
-                      target: "reply.form"
-                       } %>
+<% nesting     = local_assigns.fetch(:nesting, 1) %>
+<% max_nesting = local_assigns[:max_nesting] %>
 
-       <%= render comment.comments %>                
-    </div>
+<div class="border-left pl-4 mt-4">
+  <strong><%= comment.user.name %></strong> posted
+  <%= simple_format comment.body %>
 
-    
+  <div data-controller="reply">
+    <small>
+      <%= link_to "Reply", "#", data: { action: "click->reply#toggle" } %>
+      <%= link_to "Delete", [comment.commentable, comment], method: :delete, data: {confirm: "Are you sure?"} if comment.user == current_user %>
+    </small>
+
+    <%= render partial: "comments/form", locals: {
+      commentable: comment.commentable,
+      parent_id: reply_to_comment_id(comment, nesting, max_nesting),
+      class: "mt-4 d-none",
+      target: "reply.form"
+    } %>
+  </div>
+
+  <%= render comment.comments, nesting: nesting + 1, max_nesting: local_assigns[:max_nesting] %>
 </div>
